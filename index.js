@@ -19,14 +19,19 @@ async function run() {
   try {
     await client.connect();
     const servicesCollection = client.db('e-tutor').collection('services');
+    const reviewsCollection = client.db('e-tutor').collection('reviews');
+    
+    app.get('/', (req, res) => {
+      res.send('e-tutor server running')
+  })
 
     app.get("/services", async (req, res) => {
         const query = {};
         const cursor = servicesCollection.find(query);
         const services = await cursor.toArray();
-     
         res.send(services)
     })
+    
     app.get("/serviceDetails/:id", async (req, res) => {
       const id = req.params.id;
         const query = {_id: new ObjectId(id)};
@@ -35,18 +40,11 @@ async function run() {
      
         res.send(services)
     })
-
   } finally {
-
   }
 }
 run().catch(error=>console.log(error));
 
-
-
-app.get('/', (req, res) => {
-    res.send('e-tutor server running')
-})
 
 
 
