@@ -20,49 +20,63 @@ async function run() {
     await client.connect();
     const servicesCollection = client.db('e-tutor').collection('services');
     const reviewsCollection = client.db('e-tutor').collection('reviews');
-    
-    app.get('/', (req, res) => {
-      res.send('e-tutor server running')
-  })
 
-    app.get("/services", async (req, res) => {
-        const query = {};
-        const cursor = servicesCollection.find(query);
-        const services = await cursor.toArray();
-        res.send(services)
+    app.get('/', (req, res) => {
+      console.log(new Date())
+      res.send('e-tutor server running')
     })
 
-    app.post('/reviews', async(req, res)=>{
-      const query = req.body;
-      const review = await reviewsCollection.insertOne(query)
+    app.get("/services", async (req, res) => {
+      const query = {};
+      const cursor = servicesCollection.find(query);
+      const services = await cursor.toArray();
+      res.send(services)
+    })
+
+    app.post('/reviews', async (req, res) => {
+      let query = req.body;
+      var d = new Date();
+      var date = d.getDate();
+      var month = d.getMonth() + 1;
+      var year = d.getFullYear();
+      var dateStr = date + "/" + month + "/" + year;
+      query.date = dateStr;
+      const review = await reviewsCollection.insertOne(query);
+      console.log(review)
       res.send(review)
     })
 
-    app.get('/reviews/:name', async(req,res)=>{
+    app.post('/addService', async (req, res) => {
+      const query = req.body;
+      const review = await servicesCollection.insertOne(query)
+      console.log(review)
+      res.send(review)
+    })
+
+    app.get('/reviews/:name', async (req, res) => {
       const teacherName = req.params.name;
-      let query = {teacherName: teacherName};
-      const cursor = await reviewsCollection.find(query);
+      let query = { teacherName: teacherName };
+      const cursor = reviewsCollection.find(query);
       const reviews = await cursor.toArray();
-      console.log(reviews)
       res.send(reviews)
     })
 
     app.get("/serviceDetails/:id", async (req, res) => {
       const id = req.params.id;
-        const query = {_id: new ObjectId(id)};
-        const cursor = servicesCollection.find(query);
-        const services = await cursor.toArray();
-     
-        res.send(services)
+      const query = { _id: new ObjectId(id) };
+      const cursor = servicesCollection.find(query);
+      const services = await cursor.toArray();
+
+      res.send(services)
     })
   } finally {
   }
 }
-run().catch(error=>console.log(error));
+run().catch(error => console.log(error));
 
 
 
 
 app.listen(port, () => {
-    console.log(`e-tutor running on port ${port}`)
+  console.log(`e-tutor running on port ${port}`)
 })
