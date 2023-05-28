@@ -20,12 +20,13 @@ async function run() {
     await client.connect();
     const servicesCollection = client.db('e-tutor').collection('services');
     const reviewsCollection = client.db('e-tutor').collection('reviews');
-
+// root page 
     app.get('/', (req, res) => {
       console.log(new Date())
       res.send('e-tutor server running')
     })
 
+// get services from mongodb service collection
     app.get("/services", async (req, res) => {
       const query = {};
       const cursor = servicesCollection.find(query);
@@ -33,6 +34,7 @@ async function run() {
       res.send(services)
     })
 
+// post reviews to mongodb database
     app.post('/reviews', async (req, res) => {
       let query = req.body;
       var d = new Date();
@@ -46,6 +48,7 @@ async function run() {
       res.send(review)
     })
 
+// add service to the service collectoion
     app.post('/addService', async (req, res) => {
       const query = req.body;
       const review = await servicesCollection.insertOne(query)
@@ -53,6 +56,7 @@ async function run() {
       res.send(review)
     })
 
+    // get reviews in each services by name quey
     app.get('/reviews/:name', async (req, res) => {
       const teacherName = req.params.name;
       let query = { teacherName: teacherName };
@@ -60,30 +64,44 @@ async function run() {
       const reviews = await cursor.toArray();
       res.send(reviews)
     })
+// get user reviewes by query
     app.get('/myreviews', async (req, res) => {
-      let query = {};
-      if(req.params.email){
-       query = {
-        email  :req.params.email
-       }
-      }
+      console.log(req.query.name)
+      const query = {userName :req.query.name}
       const cursor = reviewsCollection.find(query);
       const reviews = await cursor.toArray();
       res.send(reviews)
     })
+
+    // delete review by query
     app.delete('/review/:id', async(req, res)=>{
         const id = req.params.id;
         const query = {_id: new ObjectId(id)};
         const deleteItem = await reviewsCollection.deleteOne(query);
-        res.send(deleteItem);
-    })
+        res.send(deleteItem);    
+      })
+      // get each service details by id
     app.get("/serviceDetails/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const cursor = servicesCollection.find(query);
       const services = await cursor.toArray();
       res.send(services)
-    })
+    }) 
+
+    app.patch('/review/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(req.body)
+      const { review } = req.body;
+      const filter = { _id: new ObjectId(id) }
+      const updateDoc = {
+          $set: {
+              reviewText: review,
+          }
+      }
+      const result = await reviewsCollection.updateOne(filter, updateDoc);
+      res.send(result)
+  })
   } finally {
   }
 }
