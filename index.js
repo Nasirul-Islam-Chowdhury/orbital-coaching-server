@@ -22,7 +22,6 @@ async function run() {
     const reviewsCollection = client.db('e-tutor').collection('reviews');
 // root page 
     app.get('/', (req, res) => {
-      console.log(new Date())
       res.send('e-tutor server running')
     })
 
@@ -44,7 +43,6 @@ async function run() {
       var dateStr = date + "/" + month + "/" + year;
       query.date = dateStr;
       const review = await reviewsCollection.insertOne(query);
-      console.log(review)
       res.send(review)
     })
 
@@ -52,7 +50,6 @@ async function run() {
     app.post('/addService', async (req, res) => {
       const query = req.body;
       const review = await servicesCollection.insertOne(query)
-      console.log(review)
       res.send(review)
     })
 
@@ -66,7 +63,6 @@ async function run() {
     })
 // get user reviewes by query
     app.get('/myreviews', async (req, res) => {
-      console.log(req.query.name)
       const query = {userName :req.query.name}
       const cursor = reviewsCollection.find(query);
       const reviews = await cursor.toArray();
@@ -89,27 +85,27 @@ async function run() {
       res.send(services)
     }) 
 
-    app.patch('/review/:id', async (req, res) => {
-      const id = req.params.id;
-      console.log(req.body)
-      const { review } = req.body;
-      const filter = { _id: new ObjectId(id) }
-      const updateDoc = {
-          $set: {
-              reviewText: review,
-          }
-      }
-      const result = await reviewsCollection.updateOne(filter, updateDoc);
-      res.send(result)
-  })
-  } finally {
-  }
-}
-run().catch(error => console.log(error));
+// update review by query
+// app.patch('/review/:id', async (req, res) => {
+//       const id = req.params.id;
+//       const { review } = req.body;
+//       const filter = {_id: new ObjectId(id)}
+//       const updateDoc = {
+//           $set: {
+//               reviewText: review,
+//           }
+//       }
+//       const result = await reviewsCollection.updateOne(filter, updateDoc);
+//       res.send(result)
+//   })
+//   } finally {
+//   }
+// }
+// run().catch(error => console.log(error));
 
 
 
 
 app.listen(port, () => {
   console.log(`e-tutor running on port ${port}`)
-})
+})}
