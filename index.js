@@ -27,10 +27,14 @@ async function run() {
 
 // get services from mongodb service collection
     app.get("/services", async (req, res) => {
-      const query = {};
+      const page = parseInt(req.query.page);
+      const size = parseInt(req.query.size);
+      let query = {};
+      console.log(size, page)
       const cursor = servicesCollection.find(query);
-      const services = await cursor.toArray();
-      res.send(services)
+      const services = await cursor.skip(page*size).limit(size).toArray();
+      const count = await servicesCollection.count();
+      res.send({services,count});
     })
 
 // post reviews to mongodb database
@@ -86,26 +90,25 @@ async function run() {
     }) 
 
 // update review by query
-// app.patch('/review/:id', async (req, res) => {
-//       const id = req.params.id;
-//       const { review } = req.body;
-//       const filter = {_id: new ObjectId(id)}
-//       const updateDoc = {
-//           $set: {
-//               reviewText: review,
-//           }
-//       }
-//       const result = await reviewsCollection.updateOne(filter, updateDoc);
-//       res.send(result)
-//   })
-//   } finally {
-//   }
-// }
-// run().catch(error => console.log(error));
+app.patch('/review/:id', async (req, res) => {
+      const id = req.params.id;
+      const { review } = req.body;
+      const filter = {_id: new ObjectId(id)}
+      const updateDoc = {
+          $set: {
+              reviewText: review,
+          }
+      }
+      const result = await reviewsCollection.updateOne(filter, updateDoc);
+      res.send(result)
+  })
 
-
+  } finally {
+  }
+}
+  run().catch(error => console.log(error));
 
 
 app.listen(port, () => {
   console.log(`e-tutor running on port ${port}`)
-})}
+})
