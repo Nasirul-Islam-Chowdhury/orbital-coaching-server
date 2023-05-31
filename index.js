@@ -29,12 +29,18 @@ async function run() {
     app.get("/services", async (req, res) => {
       const page = parseInt(req.query.page);
       const size = parseInt(req.query.size);
-      let query = {};
-      console.log(size, page)
+      const query = {};
       const cursor = servicesCollection.find(query);
       const services = await cursor.skip(page*size).limit(size).toArray();
-      const count = await servicesCollection.count();
+      const count = await servicesCollection.estimatedDocumentCount();
       res.send({services,count});
+    })
+// get home services from mongodb service collection
+    app.get("/homeServices", async (req, res) => {
+      const query = {};
+      const cursor = servicesCollection.find(query);
+      const services = await cursor.toArray();
+      res.send(services);
     })
 
 // post reviews to mongodb database
