@@ -1,10 +1,10 @@
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express')
 const app = express()
+require('dotenv').config();
 const port = process.env.PORT || 5000;
 const cors = require("cors");
 app.use(cors())
-require('dotenv').config();
 app.use(express.json())
 
 const uri = `mongodb+srv://${process.env.tutor_db_user_name}:${process.env.tutor_db_user_pass}@cluster0.bbqqyyb.mongodb.net/?retryWrites=true&w=majority`;
@@ -17,7 +17,7 @@ const client = new MongoClient(uri, {
 });
 async function run() {
   try {
-    await client.connect();
+     client.connect();
     const servicesCollection = client.db('e-tutor').collection('services');
     const reviewsCollection = client.db('e-tutor').collection('reviews');
 // root page 
