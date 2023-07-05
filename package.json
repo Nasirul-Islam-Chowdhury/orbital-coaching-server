@@ -17,9 +17,9 @@
     "express": "^4.18.2",
     "mongodb": "^5.5.0",
     "node": "^20.2.0",
-    "vercel": "^30.0.0"
+    "vercel": "^28.17.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.22"
+    "nodemon": "^1.14.9"
   }
 }
